@@ -313,6 +313,106 @@ export class WyvernProtocol {
         }
     }
 
+    /**
+     * Generates params for Atomic Match with sell and buy orders
+     * @param sell Signed sell order
+     * @param buy Signed buy order
+     * @param metadata metadata, default is null hash block
+     * @returns params for atomic match(without from address and value)
+     */
+    public static generateParamsForMatch = (
+        sell: SignedOrder,
+        buy: SignedOrder,
+        metadata?: string,
+    ): [
+        string[],
+        BigNumber[],
+        Array<number | BigNumber>,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        Array<number | BigNumber>,
+        string[]
+    ] => {
+        const compactAddresses = (sell: Order, buy: Order): string[] => {
+            return [
+                buy.exchange,
+                buy.maker,
+                buy.taker,
+                buy.feeRecipient,
+                buy.target,
+                buy.staticTarget,
+                buy.paymentToken,
+                sell.exchange,
+                sell.maker,
+                sell.taker,
+                sell.feeRecipient,
+                sell.target,
+                sell.staticTarget,
+                sell.paymentToken,
+            ];
+        };
+
+        const compactFees = (sell: Order, buy: Order): BigNumber[] => {
+            return [
+                buy.makerRelayerFee,
+                buy.takerRelayerFee,
+                buy.makerProtocolFee,
+                buy.takerProtocolFee,
+                buy.basePrice,
+                buy.extra,
+                buy.listingTime,
+                buy.expirationTime,
+                buy.salt,
+                sell.makerRelayerFee,
+                sell.takerRelayerFee,
+                sell.makerProtocolFee,
+                sell.takerProtocolFee,
+                sell.basePrice,
+                sell.extra,
+                sell.listingTime,
+                sell.expirationTime,
+                sell.salt,
+            ];
+        };
+
+        const compactMethods = (sell: Order, buy: Order): number[] => {
+            return [
+                buy.feeMethod,
+                buy.side,
+                buy.saleKind,
+                buy.howToCall,
+                sell.feeMethod,
+                sell.side,
+                sell.saleKind,
+                sell.howToCall,
+            ];
+        };
+
+        return [
+            compactAddresses(sell, buy),
+            compactFees(sell, buy),
+            compactMethods(sell, buy),
+            buy.calldata,
+            sell.calldata,
+            buy.replacementPattern,
+            sell.replacementPattern,
+            buy.staticExtradata,
+            sell.staticExtradata,
+            [buy.ecSignature.v || 0, sell.ecSignature.v || 0],
+            [
+                buy.ecSignature.r || constants.NULL_ADDRESS,
+                buy.ecSignature.s || constants.NULL_ADDRESS,
+                sell.ecSignature.r || constants.NULL_ADDRESS,
+                sell.ecSignature.s || constants.NULL_ADDRESS,
+                metadata || constants.NULL_BLOCK_HASH,
+            ],
+        ];
+    }
+
     constructor(provider: Web3Provider, config: WyvernProtocolConfig) {
         assert.isWeb3Provider('provider', provider);
         // assert.doesConformToSchema('config', config, wyvernProtocolConfigSchema)

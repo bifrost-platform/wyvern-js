@@ -94,6 +94,14 @@ export declare class WyvernProtocol {
      * @return The default value for that type
      */
     static generateDefaultValue: (type: string) => any;
+    /**
+     * Generates params for Atomic Match with sell and buy orders
+     * @param sell Signed sell order
+     * @param buy Signed buy order
+     * @param metadata metadata, default is null hash block
+     * @returns params for atomic match(without from address and value)
+     */
+    static generateParamsForMatch: (sell: SignedOrder, buy: SignedOrder, metadata?: string | undefined) => [string[], BigNumber[], (number | BigNumber)[], string, string, string, string, string, string, (number | BigNumber)[], string[]];
     constructor(provider: Web3Provider, config: WyvernProtocolConfig);
     /**
      * Sets a new web3 provider for wyvernProtocol.js. Updating the provider will stop all

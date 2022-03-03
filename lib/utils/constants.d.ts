@@ -1,5 +1,6 @@
 export declare const constants: {
     NULL_ADDRESS: string;
+    NULL_BLOCK_HASH: string;
     INVALID_JUMP_PATTERN: string;
     OUT_OF_GAS_PATTERN: string;
     INVALID_TAKER_FORMAT: string;
